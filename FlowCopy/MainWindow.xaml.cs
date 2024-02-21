@@ -20,37 +20,48 @@ namespace FlowCopy
         public MainWindow()
         {
             InitializeComponent();
-            FillListBoxWithFiles($"C:\\Users\\pauli\\source\\repos\\FlowCopy\\FlowCopy\\Templates", listBox_templates);
-            FillComboBoxWithFiles($"C:\\Users\\pauli\\source\\repos\\FlowCopy\\FlowCopy\\Data", comboBox_tags);
+            string basePath = AppDomain.CurrentDomain.BaseDirectory;
+            FillListBoxWithFiles(System.IO.Path.Combine(basePath, "Templates"), listBox_templates);
+            FillComboBoxWithFiles(System.IO.Path.Combine(basePath, "Data"), comboBox_tags);
+            readClipboardintoTextbox();
         }
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
+            readClipboardintoTextbox();
+        }
+
+        private void readClipboardintoTextbox() {
             // Check if there is text on the clipboard
             if (Clipboard.ContainsText())
             {
                 // Get the text from the clipboard
                 string clipboardText = Clipboard.GetText();
                 textBlock_clipboard.Text = clipboardText;
-                if (Clipboard.ContainsAudio()) { 
-                }
-                if (Clipboard.ContainsImage())
-                {
-                }
-                if (Clipboard.ContainsText())
-                {
-                }
-                if (Clipboard.ContainsFileDropList())
-                {
-                }
-                //Clipboard.
+
             }
             else
             {
                 textBlock_clipboard.Text = "No text on clipboard.";
             }
-        }
 
+            /*
+//do some fancy clip board analysis and deconstruction
+if (Clipboard.ContainsAudio())
+{
+}
+if (Clipboard.ContainsImage())
+{
+}
+if (Clipboard.ContainsText())
+{
+}
+if (Clipboard.ContainsFileDropList())
+{
+}
+*/
+
+        }
         private void listBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // Check if an item is selected
