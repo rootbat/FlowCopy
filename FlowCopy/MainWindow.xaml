@@ -7,12 +7,12 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="507,10,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Height="354" Width="283"/>
+        <TextBlock x:Name="textBlock_clipboard" HorizontalAlignment="Left" Margin="507,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="354" Width="283"/>
         <Button x:Name="button" Content="Read Clipboard" HorizontalAlignment="Left" Margin="663,390,0,0" VerticalAlignment="Top" Click="button_Click"/>
         <ListBox x:Name="listBox_templates" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="0,0,606,163" SelectionChanged="listBox_SelectionChanged"/>
-        <TextBlock x:Name="textBlock_template" HorizontalAlignment="Left" Margin="199,10,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Height="354" Width="283"/>
+        <TextBlock x:Name="textBlock_template" HorizontalAlignment="Left" Margin="199,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="354" Width="283"/>
         <Button x:Name="button1" Content="Start watching clipboard" HorizontalAlignment="Left" Margin="443,390,0,0" VerticalAlignment="Top"/>
-        <ComboBox x:Name="comboBox_tags" HorizontalAlignment="Left" Margin="15,301,0,0" VerticalAlignment="Top" Width="184"/>
+        <ComboBox x:Name="comboBox_tags" HorizontalAlignment="Left" Margin="10,295,0,0" VerticalAlignment="Top" Width="184"/>
         <Button x:Name="button_tags" Content="Apply Tags" HorizontalAlignment="Left" Margin="587,390,0,0" VerticalAlignment="Top" Click="button_tags_Click"/>
 
     </Grid>

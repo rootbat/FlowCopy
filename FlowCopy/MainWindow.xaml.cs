@@ -31,7 +31,7 @@ namespace FlowCopy
             {
                 // Get the text from the clipboard
                 string clipboardText = Clipboard.GetText();
-                textBlock.Text = clipboardText;
+                textBlock_clipboard.Text = clipboardText;
                 if (Clipboard.ContainsAudio()) { 
                 }
                 if (Clipboard.ContainsImage())
@@ -47,7 +47,7 @@ namespace FlowCopy
             }
             else
             {
-                textBlock.Text = "No text on clipboard.";
+                textBlock_clipboard.Text = "No text on clipboard.";
             }
         }
 
@@ -61,9 +61,10 @@ namespace FlowCopy
                     // Assuming the ListBox contains just the file names,
                     // you need to know the directory path to construct the full file path
                     //string directoryPath = @"C:\YourDirectoryPath"; // The same directory path used earlier
-                    string directoryPath = @"C:\Users\pauli\source\repos\FlowCopy\FlowCopy\Templates";
+                    string relativeDirectoryPath = "Templates"; // Example relative path
+                    string basePath = AppDomain.CurrentDomain.BaseDirectory;
                     string fileName = listBox_templates.SelectedItem.ToString();
-                    string fullPath = System.IO.Path.Combine(directoryPath, fileName);
+                    string fullPath = System.IO.Path.Combine(basePath, relativeDirectoryPath, fileName);
 
                     // Read all text from the selected file
                     string fileContent = File.ReadAllText(fullPath);
@@ -124,10 +125,51 @@ namespace FlowCopy
                 MessageBox.Show($"An error occurred: {ex.Message}");
             }
         }
+        
+        private Dictionary<string, string> ReadFileAndFillDictionary(string filePath)
+        {
+            var tagContentDictionary = new Dictionary<string, string>();
+
+            // Read all lines from the file
+            string[] lines = File.ReadAllLines(filePath);
+            foreach (string line in lines)
+            {
+                // Split on the first comma
+                int commaIndex = line.IndexOf(',');
+                if (commaIndex != -1)
+                {
+                    string tag = line.Substring(0, commaIndex);
+                    string content = line.Substring(commaIndex + 1);
+                    tagContentDictionary[tag] = content;
+                }
+            }
+
+            return tagContentDictionary;
+        }
 
         private void button_tags_Click(object sender, RoutedEventArgs e)
         {
+            string template = textBlock_template.Text;
 
+            string relativeDirectoryPath = "Data"; // Example relative path
+            string basePath = AppDomain.CurrentDomain.BaseDirectory;
+            if (comboBox_tags.SelectedItem != null) { 
+                string fileName = comboBox_tags.SelectedItem.ToString();
+                string fullPath = System.IO.Path.Combine(basePath, relativeDirectoryPath, fileName);
+
+                Dictionary<string, string> tagContentpairs = ReadFileAndFillDictionary(fullPath);
+
+                // Replace each tag in the template with its content
+                foreach (KeyValuePair<string, string> pair in tagContentpairs)
+                {
+                    template = template.Replace(pair.Key, pair.Value);
+                }
+
+                // Display the result in textBlock_clipboard
+                textBlock_clipboard.Text = template;
+
+                Clipboard.SetText(template);
+            }
         }
     }
 }
