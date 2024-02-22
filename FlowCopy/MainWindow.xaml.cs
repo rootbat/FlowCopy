@@ -20,11 +20,18 @@ namespace FlowCopy
         public MainWindow()
         {
             InitializeComponent();
-            FillListBoxWithFiles($"C:\\Users\\pauli\\source\\repos\\FlowCopy\\FlowCopy\\Templates", listBox_templates);
-            FillComboBoxWithFiles($"C:\\Users\\pauli\\source\\repos\\FlowCopy\\FlowCopy\\Data", comboBox_tags);
+            string basePath = AppDomain.CurrentDomain.BaseDirectory;
+            FillListBoxWithFiles(System.IO.Path.Combine(basePath, "Templates"), listBox_templates);
+            FillComboBoxWithFiles(System.IO.Path.Combine(basePath, "Data"), comboBox_tags);
+            loadCliboard();
         }
 
         private void button_Click(object sender, RoutedEventArgs e)
+        {
+            loadCliboard();
+        }
+
+        private void loadCliboard()
         {
             // Check if there is text on the clipboard
             if (Clipboard.ContainsText())
@@ -32,25 +39,12 @@ namespace FlowCopy
                 // Get the text from the clipboard
                 string clipboardText = Clipboard.GetText();
                 textBlock_clipboard.Text = clipboardText;
-                if (Clipboard.ContainsAudio()) { 
-                }
-                if (Clipboard.ContainsImage())
-                {
-                }
-                if (Clipboard.ContainsText())
-                {
-                }
-                if (Clipboard.ContainsFileDropList())
-                {
-                }
-                //Clipboard.
             }
             else
             {
                 textBlock_clipboard.Text = "No text on clipboard.";
             }
         }
-
         private void listBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // Check if an item is selected
@@ -71,6 +65,7 @@ namespace FlowCopy
 
                     // Display the content in the TextBox (or TextBlock)
                     textBlock_template.Text = fileContent;
+                    applyTags();
                 }
                 catch (Exception ex)
                 {
@@ -147,13 +142,13 @@ namespace FlowCopy
             return tagContentDictionary;
         }
 
-        private void button_tags_Click(object sender, RoutedEventArgs e)
-        {
+        private void applyTags() {
             string template = textBlock_template.Text;
 
             string relativeDirectoryPath = "Data"; // Example relative path
             string basePath = AppDomain.CurrentDomain.BaseDirectory;
-            if (comboBox_tags.SelectedItem != null) { 
+            if (comboBox_tags.SelectedItem != null)
+            {
                 string fileName = comboBox_tags.SelectedItem.ToString();
                 string fullPath = System.IO.Path.Combine(basePath, relativeDirectoryPath, fileName);
 
@@ -170,6 +165,16 @@ namespace FlowCopy
 
                 Clipboard.SetText(template);
             }
+        }
+
+        private void button_tags_Click(object sender, RoutedEventArgs e)
+        {
+            applyTags();
+        }
+
+        private void comboBox_tags_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            applyTags();
         }
     }
 }
