@@ -7,14 +7,11 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid Margin="0,0,0,-16">
-        <TextBlock x:Name="textBlock_clipboard" HorizontalAlignment="Left" Margin="512,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="270" Width="283"/>
-        <Button x:Name="button" Content="Read Clipboard" HorizontalAlignment="Left" Margin="663,390,0,0" VerticalAlignment="Top" Click="button_Click"/>
-        <ListBox x:Name="listBox_templates" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="27,19,0,225" SelectionChanged="listBox_SelectionChanged" HorizontalAlignment="Left" Width="183"/>
-        <TextBlock x:Name="textBlock_template" HorizontalAlignment="Left" Margin="248,19,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="261" Width="233"/>
-        <Button x:Name="button1" Content="Start watching clipboard" HorizontalAlignment="Left" Margin="443,390,0,0" VerticalAlignment="Top"/>
-        <ComboBox x:Name="comboBox_tags" HorizontalAlignment="Left" Margin="0,231,0,0" VerticalAlignment="Top" Width="210" Height="26" SelectionChanged="comboBox_tags_SelectionChanged"/>
-        <Button x:Name="button_tags" Content="Apply Tags" HorizontalAlignment="Left" Margin="587,390,0,0" VerticalAlignment="Top" Click="button_tags_Click"/>
-        <DataGrid x:Name="dataGrid" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="0,257,590,40"/>
+        <TextBlock x:Name="textBlock_clipboard" HorizontalAlignment="Left" Margin="248,226,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="158" Width="259"/>
+        <ListBox x:Name="listBox_templates" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="27,19,0,66" SelectionChanged="listBox_SelectionChanged" HorizontalAlignment="Left" Width="183"/>
+        <TextBlock x:Name="textBlock_template" HorizontalAlignment="Left" Margin="248,19,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="161" Width="259"/>
+        <ComboBox x:Name="comboBox_tags" HorizontalAlignment="Left" Margin="548,20,0,0" VerticalAlignment="Top" Width="210" Height="26" SelectionChanged="comboBox_tags_SelectionChanged"/>
+        <DataGrid x:Name="dataGrid" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="548,68,42,66"/>
 
     </Grid>
 </Window>
