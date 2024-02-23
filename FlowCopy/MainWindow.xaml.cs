@@ -17,6 +17,13 @@ namespace FlowCopy
     /// </summary>
     public partial class MainWindow : Window
     {
+
+        public class DictionaryEntry
+        {
+            public string Tag { get; set; }
+            public string Content { get; set; }
+        }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -25,6 +32,42 @@ namespace FlowCopy
             FillComboBoxWithFiles(System.IO.Path.Combine(basePath, "Data"), comboBox_tags);
             loadCliboard();
         }
+
+        private List<DictionaryEntry> ConvertDictionaryToList(Dictionary<string, string> dictionary)
+        {
+            var list = new List<DictionaryEntry>();
+            foreach (var pair in dictionary)
+            {
+                list.Add(new DictionaryEntry { Tag = pair.Key, Content = pair.Value });
+            }
+            return list;
+        }
+
+        private Dictionary<string, string> GetDictionaryFromDataGrid(DataGrid dataGrid)
+        {
+            var dictionary = new Dictionary<string, string>();
+
+            foreach (var item in dataGrid.Items)
+            {
+                if (item is DictionaryEntry tagContent)
+                {
+                    dictionary[tagContent.Tag] = tagContent.Content;
+                }
+            }
+
+            return dictionary;
+        }
+
+
+        private void BindDictionaryToDataGridView(Dictionary<string, string> dictionary)
+        {
+            // Convert the dictionary to a list
+            var list = ConvertDictionaryToList(dictionary);
+
+            // Bind the list to the DataGridView
+            TagsdataGrid.ItemsSource = list;
+        }
+
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
@@ -38,11 +81,11 @@ namespace FlowCopy
             {
                 // Get the text from the clipboard
                 string clipboardText = Clipboard.GetText();
-                textBlock_clipboard.Text = clipboardText;
+                textBox_clipboard.Text = clipboardText;
             }
             else
             {
-                textBlock_clipboard.Text = "No text on clipboard.";
+                textBox_clipboard.Text = "No text on clipboard.";
             }
         }
         private void listBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -55,7 +98,7 @@ namespace FlowCopy
                     // Assuming the ListBox contains just the file names,
                     // you need to know the directory path to construct the full file path
                     //string directoryPath = @"C:\YourDirectoryPath"; // The same directory path used earlier
-                    string relativeDirectoryPath = "Templates"; // Example relative path
+                    string relativeDirectoryPath = "Templates";
                     string basePath = AppDomain.CurrentDomain.BaseDirectory;
                     string fileName = listBox_templates.SelectedItem.ToString();
                     string fullPath = System.IO.Path.Combine(basePath, relativeDirectoryPath, fileName);
@@ -63,8 +106,8 @@ namespace FlowCopy
                     // Read all text from the selected file
                     string fileContent = File.ReadAllText(fullPath);
 
-                    // Display the content in the TextBox (or TextBlock)
-                    textBlock_template.Text = fileContent;
+                    // Display the content in the TextBox (or textBox)
+                    textBox_template.Text = fileContent;
                     applyTags();
                 }
                 catch (Exception ex)
@@ -143,7 +186,7 @@ namespace FlowCopy
         }
 
         private void applyTags() {
-            string template = textBlock_template.Text;
+            string template = textBox_template.Text;
 
             string relativeDirectoryPath = "Data"; // Example relative path
             string basePath = AppDomain.CurrentDomain.BaseDirectory;
@@ -154,18 +197,45 @@ namespace FlowCopy
 
                 Dictionary<string, string> tagContentpairs = ReadFileAndFillDictionary(fullPath);
 
+                BindDictionaryToDataGridView(tagContentpairs);
+
                 // Replace each tag in the template with its content
                 foreach (KeyValuePair<string, string> pair in tagContentpairs)
                 {
                     template = template.Replace(pair.Key, pair.Value);
                 }
 
-                // Display the result in textBlock_clipboard
-                textBlock_clipboard.Text = template;
+                // Display the result in textBox_clipboard
+                textBox_clipboard.Text = template;
 
                 Clipboard.SetText(template);
             }
         }
+        private void DataGrid_LostFocus(object sender, RoutedEventArgs e)
+        {
+            /*
+            string relativeDirectoryPath = "Data";
+            string basePath = AppDomain.CurrentDomain.BaseDirectory;
+            string fileName = comboBox_tags.SelectedItem.ToString();
+            string fullPath = System.IO.Path.Combine(basePath, relativeDirectoryPath, fileName);
+
+            Dictionary <string, string> tagDictionary = GetDictionaryFromDataGrid(TagsdataGrid);
+            SaveDictionaryAsCsv(tagDictionary, "fullPath");
+            */
+        }
+
+        private void SaveDictionaryAsCsv(Dictionary<string, string> dictionary, string filePath)
+        {
+            StringBuilder csvContent = new StringBuilder();
+
+            foreach (var pair in dictionary)
+            {
+                csvContent.AppendLine($"{pair.Key},{pair.Value}");
+            }
+
+            File.WriteAllText(filePath, csvContent.ToString());
+        }
+
 
         private void button_tags_Click(object sender, RoutedEventArgs e)
         {
@@ -174,6 +244,21 @@ namespace FlowCopy
 
         private void comboBox_tags_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            string relativeDirectoryPath = "Data"; // Example relative path
+            string basePath = AppDomain.CurrentDomain.BaseDirectory;
+            if (comboBox_tags.SelectedItem != null)
+            { 
+                string fileName = comboBox_tags.SelectedItem.ToString();
+                string fullPath = System.IO.Path.Combine(basePath, relativeDirectoryPath, fileName);
+                Dictionary<string, string> tagContentpairs = ReadFileAndFillDictionary(fullPath);
+
+                BindDictionaryToDataGridView(tagContentpairs);
+            }
+
+
+            //TagsdataGrid.Columns[0].HeaderText = "Tag"; 
+            //TagsdataGrid.Columns[1].HeaderText = "Content";
+
             applyTags();
         }
     }
