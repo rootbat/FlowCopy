@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
+using System.Collections.ObjectModel;
 
 namespace FlowCopy
 {
@@ -24,6 +25,8 @@ namespace FlowCopy
             public string Content { get; set; }
         }
 
+
+
         public MainWindow()
         {
             InitializeComponent();
@@ -32,6 +35,20 @@ namespace FlowCopy
             FillComboBoxWithFiles(System.IO.Path.Combine(basePath, "Data"), comboBox_tags);
             loadClipboard();
         }
+
+        public ObservableCollection<DictionaryEntry> dataItems { get; set; }
+
+        private ObservableCollection<DictionaryEntry> ConvertDictionaryToOCollection(Dictionary<string, string> dictionary)
+        {
+            var list = new ObservableCollection<DictionaryEntry>();
+            foreach (var pair in dictionary)
+            {
+                list.Add(new DictionaryEntry { Tag = pair.Key, Content = pair.Value });
+            }
+            return list;
+        }
+
+
 
         private List<DictionaryEntry> ConvertDictionaryToList(Dictionary<string, string> dictionary)
         {
@@ -62,10 +79,10 @@ namespace FlowCopy
         private void BindDictionaryToDataGridView(Dictionary<string, string> dictionary)
         {
             // Convert the dictionary to a list
-            var list = ConvertDictionaryToList(dictionary);
-
+            //var list = ConvertDictionaryToList(dictionary);
             // Bind the list to the DataGridView
-            TagsdataGrid.ItemsSource = list;
+            //TagsdataGrid.ItemsSource = list;
+            TagsdataGrid.ItemsSource = ConvertDictionaryToOCollection(dictionary);
         }
 
 
@@ -271,6 +288,7 @@ namespace FlowCopy
             applyTags();
         }
 
+        
         private void comboBox_tags_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (comboBox_tags.SelectedItem != null)
@@ -283,6 +301,7 @@ namespace FlowCopy
             }
             applyTags();
         }
+        
 
         private string datapath(string relativeDirectoryPath) {
             string basePath = AppDomain.CurrentDomain.BaseDirectory;
@@ -336,11 +355,30 @@ namespace FlowCopy
 
         private void new_data_button_Click(object sender, RoutedEventArgs e)
         {
-            string filename = textBox_new_data.Text + ".txt";
+            string filename = textBox_new_data.Text + ".csv";
             string basepath = datapath("Data");
             string filePath = System.IO.Path.Combine(basepath, filename);
             File.WriteAllText(filePath, string.Empty);
             refreshDataBox();
         }
+
+        // fill clipboard with selected tag / but need to be clever about when to refresh the clipboard and when not to
+        /*
+        private void TagsdataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            
+            
+            if (TagsdataGrid.SelectedItem != null)
+            {
+                var selectedRow = TagsdataGrid.SelectedItem as DictionaryEntry; // Replace MyRowType with the actual type of your data item
+                if (selectedRow != null)
+                {
+                    var tagValue = selectedRow.Tag; 
+                    textBox_clipboard.Text = tagValue.ToString();
+                    setclipboard(tagValue.ToString());
+                }
+            }
+         
+        } */
     }
 }

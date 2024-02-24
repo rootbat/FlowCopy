@@ -9,7 +9,7 @@
     <Grid Margin="0,0,0,-6">
         <ListBox x:Name="listBox_templates" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="17,41,0,44" SelectionChanged="listBox_SelectionChanged" HorizontalAlignment="Left" Width="214" />
         <ComboBox x:Name="comboBox_tags" HorizontalAlignment="Left" Margin="679,19,0,0" VerticalAlignment="Top" Width="151" Height="26" SelectionChanged="comboBox_tags_SelectionChanged" />
-        <DataGrid x:Name="TagsdataGrid" d:ItemsSource="{d:SampleData ItemCount=5}" ColumnWidth="Auto" Margin="521,50,0,76" AutoGenerateColumns="False" LostFocus="DataGrid_LostFocus" HorizontalAlignment="Left" Width="309" RenderTransformOrigin="0.5,0.5"  >
+        <DataGrid x:Name="TagsdataGrid" d:ItemsSource="{d:SampleData ItemCount=5}" ColumnWidth="Auto" Margin="521,50,0,44" AutoGenerateColumns="False" LostFocus="DataGrid_LostFocus" HorizontalAlignment="Left" Width="309" RenderTransformOrigin="0.5,0.5"   >
             <DataGrid.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
@@ -23,8 +23,8 @@
                 <DataGridTextColumn Header="Content" Binding="{Binding Content}" />
             </DataGrid.Columns>
         </DataGrid>
-        <TextBox x:Name="textBox_template"  AcceptsReturn="True" HorizontalAlignment="Left" Margin="248,19,0,0" TextWrapping="Wrap" Text="Template" VerticalAlignment="Top" Width="262" Height="364" FontFamily="Arial" LostFocus="Template_LostFocus"/>
-        <TextBox x:Name="textBox_clipboard" AcceptsReturn="True"  HorizontalAlignment="Left" Margin="856,19,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="264" Height="357" FontFamily="Arial" Text="Clipboard" TextChanged="textBox_lostFocus"/>
+        <TextBox x:Name="textBox_template"  AcceptsReturn="True" HorizontalAlignment="Left" Margin="248,19,0,44" TextWrapping="Wrap" Text="Template" Width="262" FontFamily="Arial" LostFocus="Template_LostFocus"/>
+        <TextBox x:Name="textBox_clipboard" AcceptsReturn="True"  HorizontalAlignment="Left" Margin="856,19,0,44" TextWrapping="Wrap" Width="264" FontFamily="Arial" Text="Clipboard" TextChanged="textBox_lostFocus"/>
         <Button x:Name="new_template_button" Content="+" HorizontalAlignment="Left" Margin="17,16,0,0" VerticalAlignment="Top" Width="22" Click="button_Click_1"/>
         <TextBox x:Name="textBox_new_template" HorizontalAlignment="Left" Margin="39,18,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="172"/>
         <Button x:Name="button_remove_template" Content="-" HorizontalAlignment="Left" Margin="211,17,0,0" VerticalAlignment="Top" Click="button_remove_template_Click" Width="20"/>
