@@ -30,7 +30,7 @@ namespace FlowCopy
             string basePath = AppDomain.CurrentDomain.BaseDirectory;
             FillListBoxWithFiles(System.IO.Path.Combine(basePath, "Templates"), listBox_templates);
             FillComboBoxWithFiles(System.IO.Path.Combine(basePath, "Data"), comboBox_tags);
-            loadCliboard();
+            loadClipboard();
         }
 
         private List<DictionaryEntry> ConvertDictionaryToList(Dictionary<string, string> dictionary)
@@ -71,10 +71,10 @@ namespace FlowCopy
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
-            loadCliboard();
+            loadClipboard();
         }
 
-        private void loadCliboard()
+        private void loadClipboard()
         {
             // Check if there is text on the clipboard
             if (Clipboard.ContainsText())
@@ -95,13 +95,8 @@ namespace FlowCopy
             {
                 try
                 {
-                    // Assuming the ListBox contains just the file names,
-                    // you need to know the directory path to construct the full file path
-                    //string directoryPath = @"C:\YourDirectoryPath"; // The same directory path used earlier
-                    string relativeDirectoryPath = "Templates";
-                    string basePath = AppDomain.CurrentDomain.BaseDirectory;
                     string fileName = listBox_templates.SelectedItem.ToString();
-                    string fullPath = System.IO.Path.Combine(basePath, relativeDirectoryPath, fileName);
+                    string fullPath = System.IO.Path.Combine(datapath("Templates"), fileName) + ".txt";
 
                     // Read all text from the selected file
                     string fileContent = File.ReadAllText(fullPath);
@@ -131,7 +126,7 @@ namespace FlowCopy
                 // Loop through the files and add them to the ListBox
                 foreach (string file in files)
                 {
-                    listBoxFiles.Items.Add(System.IO.Path.GetFileName(file)); // Adds only the file name to the ListBox
+                    listBoxFiles.Items.Add(System.IO.Path.GetFileName(file).Split(".")[0]); // Adds only the file name to the ListBox
                 }
             }
             catch (Exception ex)
@@ -185,15 +180,15 @@ namespace FlowCopy
             return tagContentDictionary;
         }
 
+        
+
         private void applyTags() {
             string template = textBox_template.Text;
 
-            string relativeDirectoryPath = "Data"; // Example relative path
-            string basePath = AppDomain.CurrentDomain.BaseDirectory;
             if (comboBox_tags.SelectedItem != null)
             {
                 string fileName = comboBox_tags.SelectedItem.ToString();
-                string fullPath = System.IO.Path.Combine(basePath, relativeDirectoryPath, fileName);
+                string fullPath = System.IO.Path.Combine(datapath("Data"), fileName);
 
                 Dictionary<string, string> tagContentpairs = ReadFileAndFillDictionary(fullPath);
 
@@ -211,17 +206,51 @@ namespace FlowCopy
                 Clipboard.SetText(template);
             }
         }
+
+        private void setclipboard(string newclipboard)
+        {
+            try
+            {
+                Clipboard.SetText(newclipboard);
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+        private void textBox_lostFocus(object sender, EventArgs e)
+        {
+            setclipboard(textBox_clipboard.Text);
+        }
+        private void Template_LostFocus(object sender, EventArgs e)
+        {
+            if (listBox_templates.SelectedItem != null)
+            {
+                string filename = listBox_templates.SelectedItem + ".txt";
+                string filePath = System.IO.Path.Combine(datapath("Templates"), filename);
+                File.WriteAllText(filePath, textBox_template.Text);
+                setclipboard(textBox_clipboard.Text);
+                applyTags();
+            }
+
+        }
+
         private void DataGrid_LostFocus(object sender, RoutedEventArgs e)
         {
-            /*
-            string relativeDirectoryPath = "Data";
-            string basePath = AppDomain.CurrentDomain.BaseDirectory;
             string fileName = comboBox_tags.SelectedItem.ToString();
-            string fullPath = System.IO.Path.Combine(basePath, relativeDirectoryPath, fileName);
+            string fullPath = System.IO.Path.Combine(datapath("Data"), fileName);
 
-            Dictionary <string, string> tagDictionary = GetDictionaryFromDataGrid(TagsdataGrid);
-            SaveDictionaryAsCsv(tagDictionary, "fullPath");
-            */
+            try
+            {
+                Dictionary<string, string> tagDictionary = GetDictionaryFromDataGrid(TagsdataGrid);
+                SaveDictionaryAsCsv(tagDictionary, fullPath);
+
+                setclipboard(textBox_clipboard.Text);
+                applyTags();
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
         private void SaveDictionaryAsCsv(Dictionary<string, string> dictionary, string filePath)
@@ -244,22 +273,74 @@ namespace FlowCopy
 
         private void comboBox_tags_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string relativeDirectoryPath = "Data"; // Example relative path
-            string basePath = AppDomain.CurrentDomain.BaseDirectory;
             if (comboBox_tags.SelectedItem != null)
             { 
                 string fileName = comboBox_tags.SelectedItem.ToString();
-                string fullPath = System.IO.Path.Combine(basePath, relativeDirectoryPath, fileName);
+                string fullPath = System.IO.Path.Combine(datapath("Data"), fileName);
                 Dictionary<string, string> tagContentpairs = ReadFileAndFillDictionary(fullPath);
 
                 BindDictionaryToDataGridView(tagContentpairs);
             }
-
-
-            //TagsdataGrid.Columns[0].HeaderText = "Tag"; 
-            //TagsdataGrid.Columns[1].HeaderText = "Content";
-
             applyTags();
+        }
+
+        private string datapath(string relativeDirectoryPath) {
+            string basePath = AppDomain.CurrentDomain.BaseDirectory;
+            string filePath = System.IO.Path.Combine(basePath, relativeDirectoryPath);
+            return filePath;
+        }
+
+
+        private void button_Click_1(object sender, RoutedEventArgs e)
+        {
+            string filename = textBox_new_template.Text + ".txt";
+            string basepath = datapath("Templates");
+            string filePath = System.IO.Path.Combine(basepath, filename);
+            File.WriteAllText(filePath, string.Empty);
+            refreshTemplates();
+
+        }
+
+        private void refreshTemplates() {
+            listBox_templates.Items.Clear();
+            FillListBoxWithFiles(datapath("Templates"), listBox_templates);
+        }
+
+        private void refreshDataBox()
+        {
+            comboBox_tags.Items.Clear();
+            FillComboBoxWithFiles(datapath("Data"), comboBox_tags);
+        }
+
+        private void button_remove_template_Click(object sender, RoutedEventArgs e)
+        {
+            if (listBox_templates.SelectedIndex != -1)
+            {
+                string fileName = listBox_templates.SelectedItem.ToString();
+                string filePath = System.IO.Path.Combine(datapath("Templates"), fileName) + ".txt";
+
+                // Check if the file exists
+                if (File.Exists(filePath))
+                {
+                    // Delete the file
+                    File.Delete(filePath);
+                    Console.WriteLine("File deleted successfully.");
+                }
+                else
+                {
+                    Console.WriteLine("File does not exist.");
+                }
+                refreshTemplates();
+            }
+        }
+
+        private void new_data_button_Click(object sender, RoutedEventArgs e)
+        {
+            string filename = textBox_new_data.Text + ".txt";
+            string basepath = datapath("Data");
+            string filePath = System.IO.Path.Combine(basepath, filename);
+            File.WriteAllText(filePath, string.Empty);
+            refreshDataBox();
         }
     }
 }
