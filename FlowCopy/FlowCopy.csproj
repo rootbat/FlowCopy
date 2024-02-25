@@ -9,24 +9,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Data\" />
-    <Folder Include="Templates\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Data\1.csv">
+    <None Update="Data\example1.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Data\2.csv">
+    <None Update="Data\example2.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Data\3.csv">
+    <None Update="Data\example3.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Templates\email.txt">
+    <None Update="Templates\email_example.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Templates\slack.txt">
+    <None Update="Templates\slack_example.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

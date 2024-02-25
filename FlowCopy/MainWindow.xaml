@@ -9,7 +9,7 @@
     <Grid Margin="0,0,0,-6">
         <ListBox x:Name="listBox_templates" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="17,41,0,44" SelectionChanged="listBox_SelectionChanged" HorizontalAlignment="Left" Width="214" />
         <ComboBox x:Name="comboBox_tags" HorizontalAlignment="Left" Margin="679,19,0,0" VerticalAlignment="Top" Width="151" Height="26" SelectionChanged="comboBox_tags_SelectionChanged" />
-        <DataGrid x:Name="TagsdataGrid" d:ItemsSource="{d:SampleData ItemCount=5}" ColumnWidth="Auto" Margin="521,50,0,44" AutoGenerateColumns="False" LostFocus="DataGrid_LostFocus" HorizontalAlignment="Left" Width="309" RenderTransformOrigin="0.5,0.5"   >
+        <DataGrid x:Name="TagsdataGrid" d:ItemsSource="{d:SampleData ItemCount=5}" ColumnWidth="Auto" Margin="521,76,0,44" AutoGenerateColumns="False" LostFocus="DataGrid_LostFocus" HorizontalAlignment="Left" Width="309" RenderTransformOrigin="0.5,0.5" SelectionChanged="TagsdataGrid_SelectionChanged"   >
             <DataGrid.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
@@ -30,6 +30,7 @@
         <Button x:Name="button_remove_template" Content="-" HorizontalAlignment="Left" Margin="211,17,0,0" VerticalAlignment="Top" Click="button_remove_template_Click" Width="20"/>
         <TextBox x:Name="textBox_new_data" HorizontalAlignment="Left" Margin="549,19,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="125" Height="26"/>
         <Button x:Name="new_data_button" Content="+" HorizontalAlignment="Left" Margin="521,18,0,0" VerticalAlignment="Top" Click="new_data_button_Click" Height="27" Width="28"/>
+        <Button x:Name="button_csv_open" Content="Open CSV" HorizontalAlignment="Left" Margin="521,50,0,0" VerticalAlignment="Top" Width="309" Click="button_csv_open_Click"/>
 
 
     </Grid>

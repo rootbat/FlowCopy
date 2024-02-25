@@ -10,6 +10,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
 using System.Collections.ObjectModel;
+using System.Linq.Expressions;
+using System.Diagnostics;
 
 namespace FlowCopy
 {
@@ -358,27 +360,70 @@ namespace FlowCopy
             string filename = textBox_new_data.Text + ".csv";
             string basepath = datapath("Data");
             string filePath = System.IO.Path.Combine(basepath, filename);
-            File.WriteAllText(filePath, string.Empty);
+
+            if (comboBox_tags.SelectedIndex != -1)
+            {
+                string oldfileName = comboBox_tags.SelectedItem.ToString();
+                string fullPath = System.IO.Path.Combine(basepath, oldfileName);
+                Dictionary<string, string> tagContentpairs = ReadFileAndFillDictionary(fullPath);
+                string tagsonlyfile = "";
+
+                foreach (var tagcontent in tagContentpairs) { 
+                    tagsonlyfile += tagcontent.Key.ToString();
+                    tagsonlyfile += ",\n";
+                }
+                File.WriteAllText(filePath, tagsonlyfile);
+
+                //BindDictionaryToDataGridView(tagContentpairs);
+                //comboBox_tags.SelectedItem = filename;
+
+            }
+            else
+            {
+                File.WriteAllText(filePath, string.Empty);
+
+            }
+
             refreshDataBox();
+            applyTags();
         }
 
-        // fill clipboard with selected tag / but need to be clever about when to refresh the clipboard and when not to
-        /*
         private void TagsdataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            
-            
             if (TagsdataGrid.SelectedItem != null)
             {
                 var selectedRow = TagsdataGrid.SelectedItem as DictionaryEntry; // Replace MyRowType with the actual type of your data item
                 if (selectedRow != null)
                 {
-                    var tagValue = selectedRow.Tag; 
-                    textBox_clipboard.Text = tagValue.ToString();
-                    setclipboard(tagValue.ToString());
+                    var tagValue = selectedRow.Tag;
+                    if (tagValue != null) { 
+                        textBox_clipboard.Text = tagValue.ToString();
+                        setclipboard(tagValue.ToString());
+                    }
                 }
             }
-         
-        } */
+        }
+
+        private void button_csv_open_Click(object sender, RoutedEventArgs e)
+        {
+            string fileName = comboBox_tags.SelectedItem.ToString();
+            string fullPath = System.IO.Path.Combine(datapath("Data"), fileName);
+
+            try
+            {
+                var processStartInfo = new ProcessStartInfo()
+                {
+                    FileName = fullPath,
+                    UseShellExecute = true
+                };
+
+                Process.Start(processStartInfo);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+            }
+
+        }
     }
 }
