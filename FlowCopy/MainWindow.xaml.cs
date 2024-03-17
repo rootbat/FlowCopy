@@ -84,6 +84,7 @@ namespace FlowCopy
             //var list = ConvertDictionaryToList(dictionary);
             // Bind the list to the DataGridView
             //TagsdataGrid.ItemsSource = list;
+            TagsdataGrid.ItemsSource = null;
             TagsdataGrid.ItemsSource = ConvertDictionaryToOCollection(dictionary);
         }
 
@@ -253,11 +254,8 @@ namespace FlowCopy
 
         }
 
-        private void DataGrid_LostFocus(object sender, RoutedEventArgs e)
+        private void savedatagridtocsv (string fullPath)
         {
-            string fileName = comboBox_tags.SelectedItem.ToString();
-            string fullPath = System.IO.Path.Combine(datapath("Data"), fileName);
-
             try
             {
                 Dictionary<string, string> tagDictionary = GetDictionaryFromDataGrid(TagsdataGrid);
@@ -270,6 +268,13 @@ namespace FlowCopy
             {
 
             }
+        }
+
+        private void DataGrid_LostFocus(object sender, RoutedEventArgs e)
+        {
+            string fileName = comboBox_tags.SelectedItem.ToString();
+            string fullPath = System.IO.Path.Combine(datapath("Data"), fileName);
+            savedatagridtocsv(fullPath);
         }
 
         private void SaveDictionaryAsCsv(Dictionary<string, string> dictionary, string filePath)
@@ -314,11 +319,13 @@ namespace FlowCopy
 
         private void button_Click_1(object sender, RoutedEventArgs e)
         {
-            string filename = textBox_new_template.Text + ".txt";
-            string basepath = datapath("Templates");
-            string filePath = System.IO.Path.Combine(basepath, filename);
-            File.WriteAllText(filePath, string.Empty);
-            refreshTemplates();
+            if (textBox_new_template.Text != string.Empty) { 
+                string filename = textBox_new_template.Text + ".txt";
+                string basepath = datapath("Templates");
+                string filePath = System.IO.Path.Combine(basepath, filename);
+                File.WriteAllText(filePath, string.Empty);
+                refreshTemplates();
+            }
 
         }
 
@@ -357,35 +364,39 @@ namespace FlowCopy
 
         private void new_data_button_Click(object sender, RoutedEventArgs e)
         {
-            string filename = textBox_new_data.Text + ".csv";
-            string basepath = datapath("Data");
-            string filePath = System.IO.Path.Combine(basepath, filename);
-
-            if (comboBox_tags.SelectedIndex != -1)
+            if (textBox_new_data.Text != string.Empty)
             {
-                string oldfileName = comboBox_tags.SelectedItem.ToString();
-                string fullPath = System.IO.Path.Combine(basepath, oldfileName);
-                Dictionary<string, string> tagContentpairs = ReadFileAndFillDictionary(fullPath);
-                string tagsonlyfile = "";
+                string filename = textBox_new_data.Text + ".csv";
+                string basepath = datapath("Data");
+                string filePath = System.IO.Path.Combine(basepath, filename);
 
-                foreach (var tagcontent in tagContentpairs) { 
-                    tagsonlyfile += tagcontent.Key.ToString();
-                    tagsonlyfile += ",\n";
+                if (comboBox_tags.SelectedIndex != -1)
+                {
+                    string oldfileName = comboBox_tags.SelectedItem.ToString();
+                    string fullPath = System.IO.Path.Combine(basepath, oldfileName);
+                    Dictionary<string, string> tagContentpairs = ReadFileAndFillDictionary(fullPath);
+                    string tagsonlyfile = "";
+
+                    foreach (var tagcontent in tagContentpairs)
+                    {
+                        tagsonlyfile += tagcontent.Key.ToString();
+                        tagsonlyfile += ",\n";
+                    }
+                    File.WriteAllText(filePath, tagsonlyfile);
+                    tagContentpairs = ReadFileAndFillDictionary(fullPath);
+                    BindDictionaryToDataGridView(tagContentpairs);
+                    comboBox_tags.SelectedItem = filename;
+
                 }
-                File.WriteAllText(filePath, tagsonlyfile);
+                else
+                {
+                    File.WriteAllText(filePath, string.Empty);
 
-                //BindDictionaryToDataGridView(tagContentpairs);
-                //comboBox_tags.SelectedItem = filename;
+                }
 
+                refreshDataBox();
+                applyTags();
             }
-            else
-            {
-                File.WriteAllText(filePath, string.Empty);
-
-            }
-
-            refreshDataBox();
-            applyTags();
         }
 
         private void TagsdataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
