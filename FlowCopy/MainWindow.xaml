@@ -7,42 +7,34 @@
         mc:Ignorable="d"
         Title="Flow Copy Automation" Height="466" Width="1142">
     <Grid Margin="0,0,0,-6">
-        <ListBox x:Name="listBox_templates" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="338,38,0,47" SelectionChanged="listBox_SelectionChanged" HorizontalAlignment="Left" Width="214" />
-        <ComboBox x:Name="comboBox_tags" HorizontalAlignment="Left" Margin="168,18,0,0" VerticalAlignment="Top" Width="151" Height="26" SelectionChanged="comboBox_tags_SelectionChanged" />
-        <DataGrid x:Name="TagsdataGrid" d:ItemsSource="{d:SampleData ItemCount=5}" ColumnWidth="Auto" Margin="10,54,0,45" AutoGenerateColumns="False" LostFocus="DataGrid_LostFocus" HorizontalAlignment="Left" Width="309" RenderTransformOrigin="0.5,0.5" SelectionChanged="TagsdataGrid_SelectionChanged"   >
+        <ListBox x:Name="listBox_templates1" Margin="453,47,0,38" SelectionChanged="listBox_SelectionChanged" HorizontalAlignment="Left" Width="214" />
+        <DataGrid x:Name="TagsdataGrid1" ColumnWidth="Auto" Margin="194,23,0,40" AutoGenerateColumns="False" LostFocus="DataGrid_LostFocus" HorizontalAlignment="Left" Width="246" RenderTransformOrigin="0.5,0.5" >
             <DataGrid.Resources>
-
-                <Style TargetType="DataGridCell" BasedOn="{StaticResource {x:Type DataGridCell}}">
+                <Style TargetType="{x:Type DataGridCell}">
                     <Style.Triggers>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
-                                <Condition Property="IsMouseOver"
-                                   Value="True" />
-                                <Condition Property="IsReadOnly"
-                                   Value="False" />
+                                <Condition Property="IsMouseOver" Value="True" />
+                                <Condition Property="IsReadOnly" Value="False" />
                             </MultiTrigger.Conditions>
-                            <MultiTrigger.Setters>
-                                <Setter Property="IsEditing"
-                                Value="True" />
-                            </MultiTrigger.Setters>
+                            <Setter Property="IsEditing" Value="True" />
                         </MultiTrigger>
                     </Style.Triggers>
                 </Style>
-
             </DataGrid.Resources>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Tag" Binding="{Binding Tag}" />
                 <DataGridTextColumn Header="Content" Binding="{Binding Content}" />
             </DataGrid.Columns>
         </DataGrid>
-        <TextBox x:Name="textBox_template"  AcceptsReturn="True" HorizontalAlignment="Left" Margin="572,23,0,40" TextWrapping="Wrap" Text="Template" Width="262" FontFamily="Arial" LostFocus="Template_LostFocus"/>
-        <TextBox x:Name="textBox_clipboard" AcceptsReturn="True"  HorizontalAlignment="Left" Margin="859,23,0,40" TextWrapping="Wrap" Width="264" FontFamily="Arial" Text="Clipboard" TextChanged="textBox_lostFocus"/>
-        <Button x:Name="new_template_button" Content="+" HorizontalAlignment="Left" Margin="338,13,0,0" VerticalAlignment="Top" Width="22" Click="button_Click_1"/>
-        <TextBox x:Name="textBox_new_template" HorizontalAlignment="Left" Margin="360,15,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="172"/>
-        <Button x:Name="button_remove_template" Content="-" HorizontalAlignment="Left" Margin="532,14,0,0" VerticalAlignment="Top" Click="button_remove_template_Click" Width="20"/>
-        <TextBox x:Name="textBox_new_data" HorizontalAlignment="Left" Margin="38,18,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="125" Height="26"/>
-        <Button x:Name="new_data_button" Content="+" HorizontalAlignment="Left" Margin="10,17,0,0" VerticalAlignment="Top" Click="new_data_button_Click" Height="27" Width="28"/>
-
-
+        <TextBox x:Name="textBox_template1" AcceptsReturn="True" HorizontalAlignment="Left" Margin="679,23,0,40" TextWrapping="Wrap" Text="Template" Width="262" FontFamily="Arial" LostFocus="Template_LostFocus"/>
+        <TextBox x:Name="textBox_clipboard1" AcceptsReturn="True" HorizontalAlignment="Left" Margin="962,23,0,40" TextWrapping="Wrap" Width="161" FontFamily="Arial" Text="Clipboard" LostFocus="TextBox_LostFocus"/>
+        <Button x:Name="new_template_button1" Content="+" HorizontalAlignment="Left" Margin="453,22,0,0" VerticalAlignment="Top" Width="22" Click="Button_Click_1"/>
+        <TextBox x:Name="textBox_new_template1" HorizontalAlignment="Left" Margin="475,24,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="172"/>
+        <Button x:Name="button_remove_template1" Content="-" HorizontalAlignment="Left" Margin="647,23,0,0" VerticalAlignment="Top" Click="Button_Remove_Template_Click" Width="20"/>
+        <TextBox x:Name="textBox_new_data1" HorizontalAlignment="Left" Margin="38,18,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="125" Height="26"/>
+        <Button x:Name="new_data_button1" Content="+" HorizontalAlignment="Left" Margin="11,18,0,0" VerticalAlignment="Top" Click="New_Data_Button_Click" Height="22" Width="22"/>
+        <Button x:Name="button_remove_version1" Content="-" HorizontalAlignment="Left" Margin="163,21,0,0" VerticalAlignment="Top" Height="22" Width="24"/>
+        <ListBox x:Name="listBox_versions" HorizontalAlignment="Left" Height="372" Margin="9,44,0,0" VerticalAlignment="Top" Width="180" SelectionChanged="ListBox_Versions_SelectionChanged"/>
     </Grid>
 </Window>
