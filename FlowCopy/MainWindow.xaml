@@ -8,7 +8,8 @@
         Title="Flow Copy Automation" Height="466" Width="1142">
     <Grid Margin="0,0,0,-6">
         <ListBox x:Name="listBox_templates1" Margin="453,47,0,38" SelectionChanged="listBox_SelectionChanged" HorizontalAlignment="Left" Width="214" />
-        <DataGrid x:Name="TagsdataGrid1" ColumnWidth="Auto" Margin="194,23,0,40" AutoGenerateColumns="False" LostFocus="DataGrid_LostFocus" HorizontalAlignment="Left" Width="246" RenderTransformOrigin="0.5,0.5" >
+        <DataGrid x:Name="TagsdataGrid1" ColumnWidth="Auto" Margin="194,23,0,40" AutoGenerateColumns="False" HorizontalAlignment="Left" Width="246" RenderTransformOrigin="0.5,0.5"
+                  CanUserAddRows="True" CellEditEnding="TagsdataGrid1_CellEditEnding" RowEditEnding="TagsdataGrid1_RowEditEnding">
             <DataGrid.Resources>
                 <Style TargetType="{x:Type DataGridCell}">
                     <Style.Triggers>
@@ -23,8 +24,8 @@
                 </Style>
             </DataGrid.Resources>
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Tag" Binding="{Binding Tag}" />
-                <DataGridTextColumn Header="Content" Binding="{Binding Content}" />
+                <DataGridTextColumn Header="Tag" Binding="{Binding Tag, UpdateSourceTrigger=PropertyChanged}" />
+                <DataGridTextColumn Header="Content" Binding="{Binding Content, UpdateSourceTrigger=PropertyChanged}" />
             </DataGrid.Columns>
         </DataGrid>
         <TextBox x:Name="textBox_template1" AcceptsReturn="True" HorizontalAlignment="Left" Margin="679,23,0,40" TextWrapping="Wrap" Text="Template" Width="262" FontFamily="Arial" LostFocus="Template_LostFocus"/>

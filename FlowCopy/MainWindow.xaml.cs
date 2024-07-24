@@ -18,6 +18,7 @@ namespace FlowCopy
         }
 
         private Dictionary<string, string> lastDictionary;
+        private bool isUpdatingFile = false;
 
         public MainWindow()
         {
@@ -31,7 +32,7 @@ namespace FlowCopy
             FillListBoxWithFiles(Path.Combine(basePath, "Templates"), listBox_templates1);
             FillListBoxWithFiles(Path.Combine(basePath, "Data"), listBox_versions);
             LoadClipboard();
-            lastDictionary = null;
+            lastDictionary = new Dictionary<string, string>();
         }
 
         public ObservableCollection<DictionaryEntry> DataItems { get; set; }
@@ -71,8 +72,8 @@ namespace FlowCopy
 
         private void BindDictionaryToDataGridView(Dictionary<string, string> dictionary)
         {
-            TagsdataGrid1.ItemsSource = ConvertDictionaryToList(dictionary);
-            lastDictionary = dictionary;
+            TagsdataGrid1.ItemsSource = ConvertDictionaryToObservableCollection(dictionary);
+            lastDictionary = new Dictionary<string, string>(dictionary);
         }
 
         private void LoadClipboard()
@@ -92,7 +93,9 @@ namespace FlowCopy
         {
             try
             {
-                string fullPath = Path.Combine(DataPath("Templates"), fileName) + ".txt";
+                string basePath = AppDomain.CurrentDomain.BaseDirectory;
+                string dataPath = Path.Combine(basePath, "Templates");
+                string fullPath = Path.Combine(dataPath, fileName) + ".txt";
                 string fileContent = File.ReadAllText(fullPath);
                 textBox_template1.Text = fileContent;
                 ApplyTags();
@@ -142,8 +145,10 @@ namespace FlowCopy
             string template = textBox_template1.Text;
             if (listBox_templates1.SelectedItem != null)
             {
+                string basePath = AppDomain.CurrentDomain.BaseDirectory;
+                string dataPath = Path.Combine(basePath, "Templates");
                 string fileName = listBox_templates1.SelectedItem.ToString();
-                string fullPath = Path.Combine(DataPath("Templates"), fileName) + ".txt";
+                string fullPath = Path.Combine(dataPath, fileName) + ".txt";
                 Dictionary<string, string> tagContentPairs = ReadFileAndFillDictionary(fullPath);
                 BindDictionaryToDataGridView(tagContentPairs);
 
@@ -179,7 +184,9 @@ namespace FlowCopy
             if (listBox_templates1.SelectedItem != null)
             {
                 string fileName = listBox_templates1.SelectedItem + ".txt";
-                string filePath = Path.Combine(DataPath("Templates"), fileName);
+                string basePath = AppDomain.CurrentDomain.BaseDirectory;
+                string dataPath = Path.Combine(basePath, "Templates");
+                string filePath = Path.Combine(dataPath, fileName);
                 File.WriteAllText(filePath, textBox_template1.Text);
                 SetClipboard(textBox_clipboard1.Text);
                 ApplyTags();
@@ -201,32 +208,33 @@ namespace FlowCopy
             }
         }
 
-        private bool DataChanged()
+        private void TagsdataGrid1_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
-            Dictionary<string, string> tagDictionary = GetDictionaryFromDataGrid(TagsdataGrid1);
-            foreach (var pair in tagDictionary)
-            {
-                if (!lastDictionary.ContainsKey(pair.Key) || lastDictionary[pair.Key] != pair.Value)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private void DataGrid_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (DataChanged())
+            if (listBox_versions.SelectedItem != null)
             {
                 string fileName = listBox_versions.SelectedItem.ToString();
-                string fullPath = Path.Combine(DataPath("Data"), fileName);
+                string basePath = AppDomain.CurrentDomain.BaseDirectory;
+                string dataPath = Path.Combine(basePath, "Data");
+                string fullPath = Path.Combine(dataPath, fileName) + ".csv";
+                SaveDataGridToCsv(fullPath);
+            }
+        }
+
+        private void TagsdataGrid1_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
+        {
+            if (listBox_versions.SelectedItem != null)
+            {
+                string fileName = listBox_versions.SelectedItem.ToString();
+                string basePath = AppDomain.CurrentDomain.BaseDirectory;
+                string dataPath = Path.Combine(basePath, "Data");
+                string fullPath = Path.Combine(dataPath, fileName) + ".csv";
                 SaveDataGridToCsv(fullPath);
             }
         }
 
         private void SaveDictionaryAsCsv(Dictionary<string, string> dictionary, string filePath)
         {
-            lastDictionary = dictionary;
+            lastDictionary = new Dictionary<string, string>(dictionary);
             StringBuilder csvContent = new StringBuilder();
             foreach (var pair in dictionary)
             {
@@ -240,7 +248,9 @@ namespace FlowCopy
             if (!string.IsNullOrEmpty(textBox_new_template1.Text))
             {
                 string fileName = textBox_new_template1.Text + ".txt";
-                string filePath = Path.Combine(DataPath("Templates"), fileName);
+                string basePath = AppDomain.CurrentDomain.BaseDirectory;
+                string dataPath = Path.Combine(basePath, "Templates");
+                string filePath = Path.Combine(dataPath, fileName);
                 File.WriteAllText(filePath, string.Empty);
                 RefreshTemplates();
             }
@@ -249,13 +259,17 @@ namespace FlowCopy
         private void RefreshTemplates()
         {
             listBox_templates1.Items.Clear();
-            FillListBoxWithFiles(DataPath("Templates"), listBox_templates1);
+            string basePath = AppDomain.CurrentDomain.BaseDirectory;
+            string dataPath = Path.Combine(basePath, "Templates");
+            FillListBoxWithFiles(dataPath, listBox_templates1);
         }
 
         private void RefreshDataBox()
         {
             listBox_versions.Items.Clear();
-            FillListBoxWithFiles(DataPath("Data"), listBox_versions);
+            string basePath = AppDomain.CurrentDomain.BaseDirectory;
+            string dataPath = Path.Combine(basePath, "Data");
+            FillListBoxWithFiles(dataPath, listBox_versions);
         }
 
         private void Button_Remove_Template_Click(object sender, RoutedEventArgs e)
@@ -263,7 +277,9 @@ namespace FlowCopy
             if (listBox_templates1.SelectedIndex != -1)
             {
                 string fileName = listBox_templates1.SelectedItem.ToString();
-                string filePath = Path.Combine(DataPath("Templates"), fileName) + ".txt";
+                string basePath = AppDomain.CurrentDomain.BaseDirectory;
+                string dataPath = Path.Combine(basePath, "Templates");
+                string filePath = Path.Combine(dataPath, fileName) + ".txt";
 
                 if (File.Exists(filePath))
                 {
@@ -278,13 +294,14 @@ namespace FlowCopy
             if (!string.IsNullOrEmpty(textBox_new_data1.Text))
             {
                 string fileName = textBox_new_data1.Text + ".csv";
-                string basePath = DataPath("Data");
-                string filePath = Path.Combine(basePath, fileName);
+                string basePath = AppDomain.CurrentDomain.BaseDirectory;
+                string dataPath = Path.Combine(basePath, "Data");
+                string filePath = Path.Combine(dataPath, fileName);
 
                 if (listBox_versions.SelectedIndex != -1)
                 {
                     string oldFileName = listBox_versions.SelectedItem.ToString();
-                    string oldFilePath = Path.Combine(basePath, oldFileName);
+                    string oldFilePath = Path.Combine(dataPath, oldFileName);
                     Dictionary<string, string> tagContentPairs = ReadFileAndFillDictionary(oldFilePath);
                     string tagsOnlyFile = string.Join(",\n", tagContentPairs.Keys);
                     File.WriteAllText(filePath, tagsOnlyFile);
@@ -306,7 +323,9 @@ namespace FlowCopy
             if (listBox_versions.SelectedIndex != -1)
             {
                 string fileName = listBox_versions.SelectedItem.ToString();
-                string fullPath = Path.Combine(DataPath("Data"), fileName) + ".csv";
+                string basePath = AppDomain.CurrentDomain.BaseDirectory;
+                string dataPath = Path.Combine(basePath, "Data");
+                string fullPath = Path.Combine(dataPath, fileName) + ".csv";
 
                 try
                 {
@@ -324,7 +343,9 @@ namespace FlowCopy
             if (listBox_versions.SelectedIndex != -1)
             {
                 string fileName = listBox_versions.SelectedItem.ToString();
-                string fullPath = Path.Combine(DataPath("Data"), fileName);
+                string basePath = AppDomain.CurrentDomain.BaseDirectory;
+                string dataPath = Path.Combine(basePath, "Data");
+                string fullPath = Path.Combine(dataPath, fileName);
 
                 try
                 {
@@ -339,11 +360,6 @@ namespace FlowCopy
                     MessageBox.Show($"An error occurred: {ex.Message}");
                 }
             }
-        }
-
-        private string DataPath(string relativeDirectoryPath)
-        {
-            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, relativeDirectoryPath);
         }
     }
 }
