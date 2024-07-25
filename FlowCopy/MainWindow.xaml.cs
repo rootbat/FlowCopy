@@ -145,18 +145,24 @@ namespace FlowCopy
             string template = textBox_template1.Text;
             if (listBox_templates1.SelectedItem != null)
             {
-                string basePath = AppDomain.CurrentDomain.BaseDirectory;
-                string dataPath = Path.Combine(basePath, "Templates");
-                string fileName = listBox_templates1.SelectedItem.ToString();
-                string fullPath = Path.Combine(dataPath, fileName) + ".txt";
-                Dictionary<string, string> tagContentPairs = ReadFileAndFillDictionary(fullPath);
-                BindDictionaryToDataGridView(tagContentPairs);
-
-                foreach (KeyValuePair<string, string> pair in tagContentPairs)
+                try
                 {
-                    template = template.Replace(pair.Key, pair.Value);
+                    string basePath = AppDomain.CurrentDomain.BaseDirectory;
+                    string dataPath = Path.Combine(basePath, "Data");
+                    string fileName = listBox_versions.SelectedItem.ToString();
+                    string fullPath = Path.Combine(dataPath, fileName) + ".csv";
+                    Dictionary<string, string> tagContentPairs = ReadFileAndFillDictionary(fullPath);
+                    BindDictionaryToDataGridView(tagContentPairs);
+                    foreach (KeyValuePair<string, string> pair in tagContentPairs)
+                    {
+                        template = template.Replace(pair.Key, pair.Value);
+                    }
                 }
-
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Could not read file: {ex.Message}");
+                }
+          
                 textBox_clipboard1.Text = template;
                 Clipboard.SetText(template);
             }
