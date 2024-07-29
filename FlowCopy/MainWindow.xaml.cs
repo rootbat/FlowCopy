@@ -419,5 +419,10 @@ namespace FlowCopy
                 }
             }
         }
+
+        private void TagsdataGrid1_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 }
