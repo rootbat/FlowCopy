@@ -32,11 +32,11 @@ namespace FlowCopy
 
         private void InitializeApp()
         {
-            string basePath = AppDomain.CurrentDomain.BaseDirectory;
-            FillListBoxWithFiles(Path.Combine(basePath, "Templates"), listBox_templates1);
-            FillListBoxWithFiles(Path.Combine(basePath, "Data"), listBox_versions);
+            FillListBoxWithFiles(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates"), listBox_templates1);
+            FillListBoxWithFiles(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data"), listBox_versions);
             LoadClipboard();
-            lastDictionary = new Dictionary<string, string>();
+            dataItems = new ObservableCollection<DictionaryEntry>();
+            TagsdataGrid1.ItemsSource = dataItems;
         }
 
         private ObservableCollection<DictionaryEntry> ConvertDictionaryToObservableCollection(Dictionary<string, string> dictionary)
@@ -154,7 +154,6 @@ namespace FlowCopy
                         template = template.Replace(pair.Key, pair.Value);
                     }
 
-                    // Check if the file is a .gpt file
                     if (fileName.EndsWith(".gpt"))
                     {
                         string apiKey = textBox_gpt_key.Text;
@@ -237,10 +236,15 @@ namespace FlowCopy
         {
             try
             {
-                Dictionary<string, string> tagDictionary = GetDictionaryFromDataGrid(TagsdataGrid1);
-                SaveDictionaryAsCsv(tagDictionary, fullPath);
-                SetClipboard(textBox_clipboard1.Text);
-                ApplyTags();
+                var dictionary = new Dictionary<string, string>();
+                foreach (var item in dataItems)
+                {
+                    if (!string.IsNullOrWhiteSpace(item.Tag) && !string.IsNullOrWhiteSpace(item.Content))
+                    {
+                        dictionary[item.Tag] = item.Content;
+                    }
+                }
+                SaveDictionaryAsCsv(dictionary, fullPath);
             }
             catch (Exception ex)
             {
@@ -248,19 +252,39 @@ namespace FlowCopy
             }
         }
 
+        private void SaveDictionaryAsCsv(Dictionary<string, string> dictionary, string filePath)
+        {
+            lastDictionary = new Dictionary<string, string>(dictionary);
+            StringBuilder csvContent = new StringBuilder();
+            foreach (var pair in dictionary)
+            {
+                csvContent.AppendLine($"{pair.Key},{pair.Value}");
+            }
+            File.WriteAllText(filePath, csvContent.ToString());
+        }
+
         private void TagsdataGrid1_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
-            if (listBox_versions.SelectedItem != null)
+            if (e.EditAction == DataGridEditAction.Commit)
             {
-                string fileName = listBox_versions.SelectedItem.ToString();
-                string basePath = AppDomain.CurrentDomain.BaseDirectory;
-                string dataPath = Path.Combine(basePath, "Data");
-                string fullPath = Path.Combine(dataPath, fileName) + ".csv";
-                SaveDataGridToCsv(fullPath);
+                CommitDataGridChanges();
             }
         }
 
         private void TagsdataGrid1_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
+        {
+            if (e.EditAction == DataGridEditAction.Commit)
+            {
+                CommitDataGridChanges();
+            }
+        }
+
+        private void TagsdataGrid1_CurrentCellChanged(object sender, EventArgs e)
+        {
+            CommitDataGridChanges();
+        }
+
+        private void CommitDataGridChanges()
         {
             if (listBox_versions.SelectedItem != null)
             {
@@ -275,17 +299,6 @@ namespace FlowCopy
         private void TagsdataGrid1_AddingNewItem(object sender, AddingNewItemEventArgs e)
         {
             e.NewItem = new DictionaryEntry { Tag = string.Empty, Content = string.Empty };
-        }
-
-        private void SaveDictionaryAsCsv(Dictionary<string, string> dictionary, string filePath)
-        {
-            lastDictionary = new Dictionary<string, string>(dictionary);
-            StringBuilder csvContent = new StringBuilder();
-            foreach (var pair in dictionary)
-            {
-                csvContent.AppendLine($"{pair.Key},{pair.Value}");
-            }
-            File.WriteAllText(filePath, csvContent.ToString());
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)

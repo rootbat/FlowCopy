@@ -10,19 +10,6 @@
         <ListBox x:Name="listBox_templates1" Margin="453,47,0,38" SelectionChanged="listBox_SelectionChanged" HorizontalAlignment="Left" Width="214" />
         <DataGrid x:Name="TagsdataGrid1" ColumnWidth="Auto" Margin="194,23,0,40" AutoGenerateColumns="False" HorizontalAlignment="Left" Width="246" RenderTransformOrigin="0.5,0.5"
                   CanUserAddRows="True" CellEditEnding="TagsdataGrid1_CellEditEnding" RowEditEnding="TagsdataGrid1_RowEditEnding" AddingNewItem="TagsdataGrid1_AddingNewItem">
-            <DataGrid.Resources>
-                <Style TargetType="{x:Type DataGridCell}">
-                    <Style.Triggers>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsMouseOver" Value="True" />
-                                <Condition Property="IsReadOnly" Value="False" />
-                            </MultiTrigger.Conditions>
-                            <Setter Property="IsEditing" Value="True" />
-                        </MultiTrigger>
-                    </Style.Triggers>
-                </Style>
-            </DataGrid.Resources>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Tag" Binding="{Binding Tag, UpdateSourceTrigger=PropertyChanged}" />
                 <DataGridTextColumn Header="Content" Binding="{Binding Content, UpdateSourceTrigger=PropertyChanged}" />
@@ -37,7 +24,6 @@
         <Button x:Name="new_data_button1" Content="+" HorizontalAlignment="Left" Margin="11,18,0,0" VerticalAlignment="Top" Click="New_Data_Button_Click" Height="22" Width="22"/>
         <Button x:Name="button_remove_version1" Content="-" HorizontalAlignment="Left" Margin="163,21,0,0" VerticalAlignment="Top" Height="22" Width="24"/>
         <ListBox x:Name="listBox_versions" HorizontalAlignment="Left" Height="372" Margin="9,44,0,0" VerticalAlignment="Top" Width="180" SelectionChanged="ListBox_Versions_SelectionChanged"/>
-
         <Grid HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="300">
             <TextBox x:Name="textBox_gpt_key" />
             <TextBlock Text="Enter GPT API Key" Foreground="Gray" Margin="5,0,0,0" VerticalAlignment="Center" IsHitTestVisible="False" 
