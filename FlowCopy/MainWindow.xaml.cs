@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using Newtonsoft.Json.Linq;
 
 namespace FlowCopy
 {
@@ -18,7 +22,7 @@ namespace FlowCopy
         }
 
         private Dictionary<string, string> lastDictionary;
-        private bool isUpdatingFile = false;
+        private ObservableCollection<DictionaryEntry> dataItems;
 
         public MainWindow()
         {
@@ -35,8 +39,6 @@ namespace FlowCopy
             lastDictionary = new Dictionary<string, string>();
         }
 
-        public ObservableCollection<DictionaryEntry> DataItems { get; set; }
-
         private ObservableCollection<DictionaryEntry> ConvertDictionaryToObservableCollection(Dictionary<string, string> dictionary)
         {
             var list = new ObservableCollection<DictionaryEntry>();
@@ -47,14 +49,11 @@ namespace FlowCopy
             return list;
         }
 
-        private List<DictionaryEntry> ConvertDictionaryToList(Dictionary<string, string> dictionary)
+        private void BindDictionaryToDataGridView(Dictionary<string, string> dictionary)
         {
-            var list = new List<DictionaryEntry>();
-            foreach (var pair in dictionary)
-            {
-                list.Add(new DictionaryEntry { Tag = pair.Key, Content = pair.Value });
-            }
-            return list;
+            dataItems = ConvertDictionaryToObservableCollection(dictionary);
+            TagsdataGrid1.ItemsSource = dataItems;
+            lastDictionary = new Dictionary<string, string>(dictionary);
         }
 
         private Dictionary<string, string> GetDictionaryFromDataGrid(DataGrid dataGrid)
@@ -64,16 +63,30 @@ namespace FlowCopy
             {
                 if (item is DictionaryEntry entry)
                 {
-                    dictionary[entry.Tag] = entry.Content;
+                    if (!string.IsNullOrWhiteSpace(entry.Tag) && !string.IsNullOrWhiteSpace(entry.Content))
+                    {
+                        dictionary[entry.Tag] = entry.Content;
+                    }
                 }
             }
             return dictionary;
         }
 
-        private void BindDictionaryToDataGridView(Dictionary<string, string> dictionary)
+        private void FillListBoxWithFiles(string directoryPath, ListBox listBoxFiles)
         {
-            TagsdataGrid1.ItemsSource = ConvertDictionaryToObservableCollection(dictionary);
-            lastDictionary = new Dictionary<string, string>(dictionary);
+            try
+            {
+                listBoxFiles.Items.Clear();
+                string[] files = Directory.GetFiles(directoryPath);
+                foreach (string file in files)
+                {
+                    listBoxFiles.Items.Add(Path.GetFileNameWithoutExtension(file));
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred: {ex.Message}");
+            }
         }
 
         private void LoadClipboard()
@@ -106,23 +119,6 @@ namespace FlowCopy
             }
         }
 
-        private void FillListBoxWithFiles(string directoryPath, ListBox listBoxFiles)
-        {
-            try
-            {
-                listBoxFiles.Items.Clear();
-                string[] files = Directory.GetFiles(directoryPath);
-                foreach (string file in files)
-                {
-                    listBoxFiles.Items.Add(Path.GetFileNameWithoutExtension(file));
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An error occurred: {ex.Message}");
-            }
-        }
-
         private Dictionary<string, string> ReadFileAndFillDictionary(string filePath)
         {
             var dictionary = new Dictionary<string, string>();
@@ -140,10 +136,10 @@ namespace FlowCopy
             return dictionary;
         }
 
-        private void ApplyTags()
+        private async void ApplyTags()
         {
             string template = textBox_template1.Text;
-            if (listBox_templates1.SelectedItem != null)
+            if (listBox_versions.SelectedItem != null)
             {
                 try
                 {
@@ -157,15 +153,53 @@ namespace FlowCopy
                     {
                         template = template.Replace(pair.Key, pair.Value);
                     }
+
+                    // Check if the file is a .gpt file
+                    if (fileName.EndsWith(".gpt"))
+                    {
+                        string apiKey = textBox_gpt_key.Text;
+                        if (string.IsNullOrEmpty(apiKey))
+                        {
+                            MessageBox.Show("Please enter your GPT API key.");
+                            return;
+                        }
+
+                        string response = await GetChatGPTResponse(template, apiKey);
+                        textBox_clipboard1.Text = response;
+                        Clipboard.SetText(response);
+                    }
+                    else
+                    {
+                        textBox_clipboard1.Text = template;
+                        Clipboard.SetText(template);
+                    }
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show($"Could not read file: {ex.Message}");
                 }
-          
-                textBox_clipboard1.Text = template;
-                Clipboard.SetText(template);
             }
+        }
+
+        private async Task<string> GetChatGPTResponse(string prompt, string apiKey)
+        {
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+
+            var requestBody = new
+            {
+                model = "text-davinci-003",
+                prompt = prompt,
+                max_tokens = 150
+            };
+
+            var content = new StringContent(JObject.FromObject(requestBody).ToString(), Encoding.UTF8, "application/json");
+
+            var response = await client.PostAsync("https://api.openai.com/v1/completions", content);
+            var responseString = await response.Content.ReadAsStringAsync();
+            var responseJson = JObject.Parse(responseString);
+
+            return responseJson["choices"][0]["text"].ToString().Trim();
         }
 
         private void SetClipboard(string newClipboard)
@@ -236,6 +270,11 @@ namespace FlowCopy
                 string fullPath = Path.Combine(dataPath, fileName) + ".csv";
                 SaveDataGridToCsv(fullPath);
             }
+        }
+
+        private void TagsdataGrid1_AddingNewItem(object sender, AddingNewItemEventArgs e)
+        {
+            e.NewItem = new DictionaryEntry { Tag = string.Empty, Content = string.Empty };
         }
 
         private void SaveDictionaryAsCsv(Dictionary<string, string> dictionary, string filePath)

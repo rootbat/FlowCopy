@@ -2,8 +2,9 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:FlowCopy"
+             xmlns:converters="clr-namespace:FlowCopy.Converters"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
     </Application.Resources>
 </Application>
