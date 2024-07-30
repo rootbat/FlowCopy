@@ -356,20 +356,10 @@ namespace FlowCopy
                 string dataPath = Path.Combine(basePath, "Data");
                 string filePath = Path.Combine(dataPath, fileName);
 
-                if (listBox_versions.SelectedIndex != -1)
-                {
-                    string oldFileName = listBox_versions.SelectedItem.ToString();
-                    string oldFilePath = Path.Combine(dataPath, oldFileName);
-                    Dictionary<string, string> tagContentPairs = ReadFileAndFillDictionary(oldFilePath);
-                    string tagsOnlyFile = string.Join(",\n", tagContentPairs.Keys);
-                    File.WriteAllText(filePath, tagsOnlyFile);
-                    BindDictionaryToDataGridView(tagContentPairs);
-                    listBox_versions.SelectedItem = fileName;
-                }
-                else
-                {
-                    File.WriteAllText(filePath, string.Empty);
-                }
+
+                File.WriteAllText(filePath, string.Empty);
+                listBox_versions.SelectedItem = textBox_new_data1.Text;
+                
 
                 RefreshDataBox();
                 ApplyTags();
@@ -423,6 +413,23 @@ namespace FlowCopy
         private void TagsdataGrid1_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
+        }
+
+        private void button_remove_version1_Click(object sender, RoutedEventArgs e)
+        {
+            if (listBox_versions.SelectedIndex != -1)
+            {
+                string fileName = listBox_versions.SelectedItem.ToString();
+                string basePath = AppDomain.CurrentDomain.BaseDirectory;
+                string dataPath = Path.Combine(basePath, "Data");
+                string filePath = Path.Combine(dataPath, fileName) + ".csv";
+
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+                RefreshDataBox();
+            }
         }
     }
 }

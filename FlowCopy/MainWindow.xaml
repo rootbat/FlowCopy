@@ -19,20 +19,19 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <!-- StackPanel for buttons and textboxes -->
+        <!-- StackPanel for GPT API Key -->
         <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.ColumnSpan="5" Margin="10">
             <TextBox x:Name="textBox_gpt_key" Width="300" Text="Enter GPT API Key" Margin="10,0"/>
         </StackPanel>
 
         <!-- StackPanel for versions controls and ListBox for versions -->
         <StackPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10">
-            <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.ColumnSpan="3" Margin="10">
+            <StackPanel Orientation="Horizontal" Margin="10,0">
                 <Button x:Name="new_data_button1" Content="+" Width="20" Click="New_Data_Button_Click" Margin="1,0"/>
                 <TextBox x:Name="textBox_new_data1" Width="140" Margin="1,0"/>
-                <Button x:Name="button_remove_version1" Content="-" Width="20" Margin="1,0"/>
+                <Button x:Name="button_remove_version1" Content="-" Width="20" Margin="1,0" Click="button_remove_version1_Click"/>
             </StackPanel>
-
-            <ListBox x:Name="listBox_versions" SelectionChanged="ListBox_Versions_SelectionChanged" />
+            <ListBox x:Name="listBox_versions" SelectionChanged="ListBox_Versions_SelectionChanged" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
         </StackPanel>
 
         <!-- DataGrid for tags -->
@@ -44,15 +43,14 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <!-- ListBox for templates -->
+        <!-- StackPanel for templates controls and ListBox for templates -->
         <StackPanel Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10">
-            <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.ColumnSpan="3" Margin="10">
+            <StackPanel Orientation="Horizontal" Margin="10,0">
                 <Button x:Name="new_template_button1" Content="+" Width="20" Click="Button_Click_1" Margin="1,0"/>
                 <TextBox x:Name="textBox_new_template1" Width="140" Margin="1,0"/>
                 <Button x:Name="button_remove_template1" Content="-" Width="20" Click="Button_Remove_Template_Click" Margin="1,0"/>
             </StackPanel>
-
-            <ListBox x:Name="listBox_templates1" Grid.Row="1" Margin="10" SelectionChanged="listBox_SelectionChanged" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+            <ListBox x:Name="listBox_templates1" Margin="10,0" SelectionChanged="listBox_SelectionChanged" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
         </StackPanel>
 
         <!-- TextBox for template content -->
