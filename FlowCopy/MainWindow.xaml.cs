@@ -109,7 +109,18 @@ namespace FlowCopy
                 string basePath = AppDomain.CurrentDomain.BaseDirectory;
                 string dataPath = Path.Combine(basePath, "Templates");
                 string fullPath = Path.Combine(dataPath, fileName) + ".txt";
-                string fileContent = File.ReadAllText(fullPath);
+                string fileContent = "";
+                if (File.Exists(fullPath))
+                {
+                    fileContent = File.ReadAllText(fullPath);
+                }
+                else
+                {
+                    fullPath = Path.Combine(dataPath, fileName) + ".gpt";
+                    fileContent = File.ReadAllText(fullPath);
+
+                }
+
                 textBox_template1.Text = fileContent;
                 ApplyTags();
             }
@@ -154,30 +165,32 @@ namespace FlowCopy
                         template = template.Replace(pair.Key, pair.Value);
                     }
 
-                    if (fileName.EndsWith(".gpt"))
-                    {
-                        string apiKey = textBox_gpt_key.Text;
-                        if (string.IsNullOrEmpty(apiKey))
-                        {
-                            MessageBox.Show("Please enter your GPT API key.");
-                            return;
-                        }
+                    textBox_clipboard1.Text = template;
+                    Clipboard.SetText(template);
 
-                        string response = await GetChatGPTResponse(template, apiKey);
-                        textBox_clipboard1.Text = response;
-                        Clipboard.SetText(response);
-                    }
-                    else
-                    {
-                        textBox_clipboard1.Text = template;
-                        Clipboard.SetText(template);
-                    }
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show($"Could not read file: {ex.Message}");
                 }
             }
+        }
+
+        private async void Send_Data_to_ChatGPT_Button_Click(object sender, RoutedEventArgs e)
+        {
+            string apiKey = textBox_gpt_key.Text;
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                MessageBox.Show("Please enter your GPT API key.");
+                return;
+            }
+            string gptQuery = textBox_clipboard1.Text;
+            send_button1.IsEnabled = false;
+            string response = await GetChatGPTResponse(gptQuery, apiKey);
+            send_button1.IsEnabled = true;
+
+            textBox_clipboard1.Text = response;
+            Clipboard.SetText(response);
         }
 
         private async Task<string> GetChatGPTResponse(string prompt, string apiKey)
@@ -187,7 +200,7 @@ namespace FlowCopy
 
             var requestBody = new
             {
-                model = "text-davinci-003",
+                model = "gpt-4o-mini",
                 prompt = prompt,
                 max_tokens = 150
             };
@@ -198,7 +211,13 @@ namespace FlowCopy
             var responseString = await response.Content.ReadAsStringAsync();
             var responseJson = JObject.Parse(responseString);
 
-            return responseJson["choices"][0]["text"].ToString().Trim();
+            string retstr = responseString;
+            if (responseJson["choices"] != null)
+            {
+                retstr = responseJson["choices"][0]["text"].ToString().Trim();
+            }
+
+            return retstr;
         }
 
         private void SetClipboard(string newClipboard)
@@ -359,7 +378,7 @@ namespace FlowCopy
 
                 File.WriteAllText(filePath, string.Empty);
                 listBox_versions.SelectedItem = textBox_new_data1.Text;
-                
+
 
                 RefreshDataBox();
                 ApplyTags();
