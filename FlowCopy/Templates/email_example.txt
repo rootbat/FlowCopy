@@ -1,7 +1,11 @@
-Dear Sir or Madam,
+Greetings Leadership & Stakeholders,
 
-Something [tag1] new for [tag2] and the winds begin to howl
+The latest release of version [Version] is ready ([ChangeList]) is ready for customers. [Release Reason]
 
-Sincerely,
+The planned date for delivery is [Release Date]. 
 
-The office people
+Build Link: [Build link Release]
+
+
+Cheers,
+Release Management

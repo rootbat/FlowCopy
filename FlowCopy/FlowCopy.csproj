@@ -25,6 +25,9 @@
     <None Update="Templates\email_example.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Templates\ChatGPT_Prompt.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Templates\slack_example.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

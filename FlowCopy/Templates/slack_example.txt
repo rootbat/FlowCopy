@@ -1,2 +1,6 @@
-Did you know that [tag1] is made for you
-[tag2] is always there, and has always been
+[Release Date] Release of [Version] is ready for QA review.
+
+Purpose of this release: [Release Reason]
+Build Links (for CL [ChangeList]):
+Retail build: [Build link Release]
+QA build (includes debug tools): [Build link Debug]

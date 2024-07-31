@@ -1,0 +1,8 @@
+I have a list of details for an upcoming software update, can you craft them into a narrative for stakeholders to understand these key details. Please provide only the final output.
+
+Version:[Version]
+ChangeList:[ChangeList]
+Release Reason:[Release Reason] 
+Build link Release:[Build link Release]
+Build link Debug: [Build link Debug]
+Release Date:[Release Date]
