@@ -200,21 +200,25 @@ namespace FlowCopy
 
             var requestBody = new
             {
-                model = "gpt-4o-mini",
-                prompt = prompt,
+                model = "gpt-4o-mini", // or any valid model you want to use
+                messages = new[]
+                {
+            new { role = "system", content = "You are a helpful assistant." },
+            new { role = "user", content = prompt }
+        },
                 max_tokens = 150
             };
 
             var content = new StringContent(JObject.FromObject(requestBody).ToString(), Encoding.UTF8, "application/json");
 
-            var response = await client.PostAsync("https://api.openai.com/v1/completions", content);
+            var response = await client.PostAsync("https://api.openai.com/v1/chat/completions", content);
             var responseString = await response.Content.ReadAsStringAsync();
             var responseJson = JObject.Parse(responseString);
 
             string retstr = responseString;
             if (responseJson["choices"] != null)
             {
-                retstr = responseJson["choices"][0]["text"].ToString().Trim();
+                retstr = responseJson["choices"][0]["message"]["content"].ToString().Trim();
             }
 
             return retstr;
