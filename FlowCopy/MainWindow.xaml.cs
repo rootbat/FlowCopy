@@ -379,8 +379,20 @@ namespace FlowCopy
                 string dataPath = Path.Combine(basePath, "Data");
                 string filePath = Path.Combine(dataPath, fileName);
 
+                string newfileData = string.Empty;
+                if (listBox_versions.SelectedItem != null)
+                {
+                    foreach (var item in dataItems)
+                    {
+                        if (!string.IsNullOrWhiteSpace(item.Tag) && !string.IsNullOrWhiteSpace(item.Content))
+                        {
+                            newfileData += item.Tag + ",\n";
+                        }
+                    }          
+                }
 
-                File.WriteAllText(filePath, string.Empty);
+
+                File.WriteAllText(filePath, newfileData);
                 listBox_versions.SelectedItem = textBox_new_data1.Text;
 
 

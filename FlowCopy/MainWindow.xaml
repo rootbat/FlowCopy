@@ -20,7 +20,7 @@
         </Grid.ColumnDefinitions>
 
         <!-- StackPanel for GPT API Key -->
-        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.ColumnSpan="5" Margin="10">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="0" Grid.ColumnSpan="5" Margin="10">
             <TextBox x:Name="textBox_gpt_key" Width="300" Text="Enter GPT API Key" Margin="10,0"/>
             <Button x:Name="send_button1" Content="Send to ChatGPT" Width="120" Click="Send_Data_to_ChatGPT_Button_Click" Margin="1,0"/>
         </StackPanel>
